@@ -1,8 +1,8 @@
 import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
-import axios from "axios";
 import "./SingleArticle.css";
 import Comments from "./Comments";
+import { fetchSingleArticle } from "../utils/api";
 
 export default function SingleArticle() {
   const { article_id } = useParams();
@@ -12,17 +12,17 @@ export default function SingleArticle() {
 
   useEffect(() => {
     setIsLoading(true);
-    axios
-      .get(
-        `https://be-nc-news-candy-sep.onrender.com/api/articles/${article_id}`,
-      )
-      .then(({ data }) => {
-        setArticle(data.article);
-        setIsLoading(false);
+    fetchSingleArticle(article_id)
+      .then((article) => {
+        if (article) {
+          setArticle(article);
+          setIsLoading(false);
+        }
       })
       .catch((err) => {
         setError("Article not found");
         setIsLoading(false);
+        console.log(err);
       });
   }, [article_id]);
 
