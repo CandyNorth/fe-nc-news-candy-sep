@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import axios from "axios";
 import "./SingleArticle.css";
+import Comments from "./Comments";
 
 export default function SingleArticle() {
   const { article_id } = useParams();
@@ -47,6 +48,7 @@ export default function SingleArticle() {
         <span> {article.votes} votes</span>
         <span> {article.comment_count} comments</span>
       </div>
+      <Comments article_id={article_id} />
     </div>
   );
 }
