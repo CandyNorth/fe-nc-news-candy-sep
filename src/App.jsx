@@ -1,16 +1,23 @@
+import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import ArticleList from "./Components/ArticleList";
+import SingleArticle from "./Components/SingleArticle";
 import "./App.css";
 
 function App() {
   return (
-    <div className="app">
-      <header className="app-header">
-        <h1>NC News</h1>
-      </header>
-      <main>
-        <ArticleList />
-      </main>
-    </div>
+    <Router>
+      <div className="app">
+        <header className="app-header">
+          <h1>NC News</h1>
+        </header>
+        <main>
+          <Routes>
+            <Route path="/" element={<ArticleList />} />
+            <Route path="/articles/:article_id" element={<SingleArticle />} />
+          </Routes>
+        </main>
+      </div>
+    </Router>
   );
 }
 export default App;

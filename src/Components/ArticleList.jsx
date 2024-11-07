@@ -2,6 +2,8 @@ import React from "react";
 import axios from "axios";
 import { useState, useEffect } from "react";
 import "./ArticleList.css";
+import { Link } from "react-router-dom";
+// import "./ArticleList.css";
 
 export default function ArticleList() {
   const [articles, setArticles] = useState([]);
@@ -29,25 +31,27 @@ export default function ArticleList() {
   return (
     <div className="articles-container">
       {articles.map((article) => (
-        <article key={article.article_id} className="article-card">
-          <img
-            src={article.article_img_url}
-            alt={article.title}
-            className="article-image"
-          />
-          <div className="article-content">
-            <h2>{article.title}</h2>
-            <p className="article-meta">
-              By {article.author} •{" "}
-              {new Date(article.created_at).toLocaleDateString()}
-            </p>
-            <p className="article-topic">Topic: {article.topic}</p>
-            <div className="article-stats">
-              <span> {article.comment_count} comments</span>
-              <span> {article.votes} votes</span>
+        <Link to={`/articles/${article.article_id}`} key={article.article_id}>
+          <article className="article-card">
+            <img
+              src={article.article_img_url}
+              alt={article.title}
+              className="article-image"
+            />
+            <div className="article-content">
+              <h2>{article.title}</h2>
+              <p className="article-meta">
+                By {article.author} •{" "}
+                {new Date(article.created_at).toLocaleDateString()}
+              </p>
+              <p className="article-topic">Topic: {article.topic}</p>
+              <div className="article-stats">
+                <span> {article.comment_count} comments</span>
+                <span> {article.votes} votes</span>
+              </div>
             </div>
-          </div>
-        </article>
+          </article>
+        </Link>
       ))}
     </div>
   );
