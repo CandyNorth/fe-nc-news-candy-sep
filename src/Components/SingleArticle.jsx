@@ -1,30 +1,46 @@
 import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
-import axios from "axios";
 import "./SingleArticle.css";
 import Comments from "./Comments";
+import { fetchSingleArticle, updateArticleVotes } from "../utils/api";
 
 export default function SingleArticle() {
   const { article_id } = useParams();
   const [article, setArticle] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [voteErrorMessage, setVoteErrorMessage] = useState(null);
 
   useEffect(() => {
     setIsLoading(true);
-    axios
-      .get(
-        `https://be-nc-news-candy-sep.onrender.com/api/articles/${article_id}`,
-      )
-      .then(({ data }) => {
-        setArticle(data.article);
-        setIsLoading(false);
+    fetchSingleArticle(article_id)
+      .then((article) => {
+        if (article) {
+          setArticle(article);
+          setIsLoading(false);
+        }
       })
       .catch((err) => {
         setError("Article not found");
         setIsLoading(false);
+        console.log(err);
       });
   }, [article_id]);
+
+  const handleVote = (increment) => {
+    setArticle((currentArticle) => ({
+      ...currentArticle,
+      votes: currentArticle.votes + increment,
+    }));
+
+    updateArticleVotes(article_id, increment).catch((err) => {
+      setArticle((currentArticle) => ({
+        ...currentArticle,
+        votes: currentArticle.votes - increment,
+      }));
+      setVoteErrorMessage("Failed to update vote. Please try again.");
+    });
+  };
 
   if (isLoading) return <div>Loading article...</div>;
   if (error) return <div>{error}</div>;
@@ -44,9 +60,11 @@ export default function SingleArticle() {
         className="article-full-image"
       />
       <p className="article-body">{article.body}</p>
-      <div className="article-stats">
-        <span> {article.votes} votes</span>
-        <span> {article.comment_count} comments</span>
+      <div>
+        <p>Votes: {article.votes}</p>
+        <button onClick={() => handleVote(1)}>Upvote</button>
+        <button onClick={() => handleVote(-1)}>Downvote</button>
+        {voteErrorMessage && <p>{voteErrorMessage}</p>}
       </div>
       <Comments article_id={article_id} />
     </div>

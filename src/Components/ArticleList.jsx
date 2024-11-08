@@ -1,9 +1,7 @@
-import React from "react";
-import axios from "axios";
 import { useState, useEffect } from "react";
 import "./ArticleList.css";
 import { Link } from "react-router-dom";
-// import "./ArticleList.css";
+import { fetchArticles } from "../utils/api";
 
 export default function ArticleList() {
   const [articles, setArticles] = useState([]);
@@ -11,17 +9,17 @@ export default function ArticleList() {
   const [error, setError] = useState(null);
 
   useEffect(() => {
-    const apiUrl = "https://be-nc-news-candy-sep.onrender.com/api/articles";
-    axios
-      .get(apiUrl)
-      .then((response) => {
-        setArticles(response.data.articles);
-        setIsLoading(false);
+    fetchArticles()
+      .then((articles) => {
+        if (articles) {
+          setArticles(articles);
+          setIsLoading(false);
+        }
       })
-      .catch((error) => {
+      .catch((err) => {
         setError("Error fetching articles");
         setIsLoading(false);
-        console.error(error);
+        console.log(err);
       });
   }, []);
 

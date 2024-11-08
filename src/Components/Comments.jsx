@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
-import axios from "axios";
 import "./Comments.css";
+import { fetchArticleComments } from "../utils/api";
 
 export default function Comments({ article_id }) {
   const [comments, setComments] = useState([]);
@@ -9,20 +9,17 @@ export default function Comments({ article_id }) {
 
   useEffect(() => {
     setIsLoading(true);
-    axios
-      .get(
-        `https://be-nc-news-candy-sep.onrender.com/api/articles/${article_id}/comments`
-      )
-      .then(({ data }) => {
-        setComments(data.comments);
-        setIsLoading(false);
-      })
-      .catch((error) => {
-        if (error) {
-          setError("Error loading comments");
+    fetchArticleComments(article_id)
+      .then((comments) => {
+        if (comments) {
+          setComments(comments);
           setIsLoading(false);
-          console.log(error);
         }
+      })
+      .catch((err) => {
+        setError("Error loading comments");
+        setIsLoading(false);
+        console.log(err);
       });
   }, [article_id]);
 
