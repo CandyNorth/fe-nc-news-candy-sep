@@ -54,3 +54,16 @@ export const fetchArticlesByTopic = (topic) =>
       return response.data.articles;
     })
     .catch((err) => console.log(err));
+
+export const updateArticleVotes = (article_id, increment) => {
+  return api
+    .patch(`/articles/${article_id}`, { inc_votes: increment })
+    .then((response) => {
+      if (response.status !== 200)
+        return Promise.reject(`expected 200, got ${response.status}`);
+      return response.data.article;
+    })
+    .catch((err) => {
+      console.log(err);
+    });
+};

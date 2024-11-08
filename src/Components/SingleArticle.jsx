@@ -2,13 +2,14 @@ import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import "./SingleArticle.css";
 import Comments from "./Comments";
-import { fetchSingleArticle } from "../utils/api";
+import { fetchSingleArticle, updateArticleVotes } from "../utils/api";
 
 export default function SingleArticle() {
   const { article_id } = useParams();
   const [article, setArticle] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [voteErrorMessage, setVoteErrorMessage] = useState(null);
 
   useEffect(() => {
     setIsLoading(true);
@@ -25,6 +26,21 @@ export default function SingleArticle() {
         console.log(err);
       });
   }, [article_id]);
+
+  const handleVote = (increment) => {
+    setArticle((currentArticle) => ({
+      ...currentArticle,
+      votes: currentArticle.votes + increment,
+    }));
+
+    updateArticleVotes(article_id, increment).catch((err) => {
+      setArticle((currentArticle) => ({
+        ...currentArticle,
+        votes: currentArticle.votes - increment,
+      }));
+      setVoteErrorMessage("Failed to update vote. Please try again.");
+    });
+  };
 
   if (isLoading) return <div>Loading article...</div>;
   if (error) return <div>{error}</div>;
@@ -44,9 +60,11 @@ export default function SingleArticle() {
         className="article-full-image"
       />
       <p className="article-body">{article.body}</p>
-      <div className="article-stats">
-        <span> {article.votes} votes</span>
-        <span> {article.comment_count} comments</span>
+      <div>
+        <p>Votes: {article.votes}</p>
+        <button onClick={() => handleVote(1)}>Upvote</button>
+        <button onClick={() => handleVote(-1)}>Downvote</button>
+        {voteErrorMessage && <p>{voteErrorMessage}</p>}
       </div>
       <Comments article_id={article_id} />
     </div>
